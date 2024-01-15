@@ -35,8 +35,8 @@ namespace mongodb_dotnet_example
             // configuring CORS options
             services.ConfigureOptions<CORSSettingsOptions>();
             IConfiguration configuration = Configuration; // Assuming you have IConfiguration injected into your class
-            var corsOptions = new CORSOptions();
-            configuration.GetSection(CORSSettingsOptions.SectionName).Bind(corsOptions);
+           
+            var corsOptions = Configuration.GetSection(CORSSettingsOptions.SectionName).Get<CORSOptions>();
 
             //setting up orgins for cofigured client urls 
             services.AddCors(options =>
