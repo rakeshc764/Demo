@@ -79,6 +79,9 @@ namespace mongodb_dotnet_example.Controllers
         [HttpDelete("{id:length(24)}")]
         public async Task<IActionResult> Delete(string id)
         {
+            if (string.IsNullOrEmpty(id))
+                return BadRequest("invalid input");
+            
             var game = await _gameService.GetAsync(id);
 
             if (game == null)
