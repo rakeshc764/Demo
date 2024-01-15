@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,22 @@ namespace mongodb_dotnet_example
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureOptions<GamesDatabaseSettingsOptions>();
-           
+            // configuring CORS options
+            services.ConfigureOptions<CORSSettingsOptions>();
+            IConfiguration configuration = Configuration; // Assuming you have IConfiguration injected into your class
+            var corsOptions = new CORSOptions();
+            configuration.GetSection(CORSSettingsOptions.SectionName).Bind(corsOptions);
+
+            //setting up orgins for cofigured client urls 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(corsOptions.AllowedHosts)
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
+            });
             // adding Mongoclient service 
             services.AddSingleton<IMongoClient>(serviceProvider =>
             {
@@ -61,6 +77,7 @@ namespace mongodb_dotnet_example
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "mongodb_dotnet_example v1"));
 
             app.UseHttpsRedirection();
+            app.UseCors();
 
             app.UseRouting();
 
