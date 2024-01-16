@@ -43,9 +43,16 @@ namespace mongodb_dotnet_example
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins(corsOptions.AllowedHosts)
-                           .AllowAnyHeader()
-                           .AllowAnyMethod();
+                    builder
+                        .WithOrigins(
+                            corsOptions.AllowedHosts
+                                .Select(o => o.Trim().RemovePostFix("/"))
+                                .ToArray()
+                        )
+                        .SetIsOriginAllowedToAllowWildcardSubdomains()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
             });
             // adding Mongoclient service 
@@ -77,9 +84,10 @@ namespace mongodb_dotnet_example
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "mongodb_dotnet_example v1"));
 
             app.UseHttpsRedirection();
-            app.UseCors();
-
+            
             app.UseRouting();
+            
+            app.UseCors();
 
             app.UseAuthorization();
 

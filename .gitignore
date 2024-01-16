@@ -15,6 +15,9 @@
 
 # Mono auto generated files
 mono_crash.*
+Tests/MontoTests/bin/**
+Tests/MontoTests/obj/**
+vs/mongodb-dotnet-example/**
 
 # Build results
 [Dd]ebug/
@@ -457,4 +460,5 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 Tests/MongoTests/obj/Debug/*
 Tests/MongoTests/bin/Debug/*
+
 
