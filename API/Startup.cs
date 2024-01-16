@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using mongodb_dotnet_example.Models;
 using mongodb_dotnet_example.Services;
+using Serilog;
 
 namespace mongodb_dotnet_example
 {
@@ -55,6 +50,12 @@ namespace mongodb_dotnet_example
                         .AllowCredentials();
                 });
             });
+
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.ClearProviders(); // Remove the default logging providers
+                loggingBuilder.AddSerilog();     // Use Serilog as the logger
+            });
             // adding Mongoclient service 
             services.AddSingleton<IMongoClient>(serviceProvider =>
             {
@@ -76,7 +77,6 @@ namespace mongodb_dotnet_example
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                
                 
             }
 
