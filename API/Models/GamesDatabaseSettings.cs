@@ -26,4 +26,5 @@ namespace mongodb_dotnet_example.Models
           .Bind(options);
         }
     }
+
 }
