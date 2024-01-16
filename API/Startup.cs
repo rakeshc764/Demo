@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using mongodb_dotnet_example.Models;
 using mongodb_dotnet_example.Services;
+using Serilog;
 
 namespace mongodb_dotnet_example
 {
@@ -31,7 +27,35 @@ namespace mongodb_dotnet_example
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureOptions<GamesDatabaseSettingsOptions>();
+            // configuring CORS options
+            services.ConfigureOptions<CORSSettingsOptions>();
+            IConfiguration configuration = Configuration; // Assuming you have IConfiguration injected into your class
            
+            var corsOptions = Configuration.GetSection(CORSSettingsOptions.SectionName).Get<CORSOptions>();
+
+            //setting up orgins for cofigured client urls 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder
+                        .WithOrigins(
+                            corsOptions.AllowedHosts
+                                .Select(o => o.Trim().RemovePostFix("/"))
+                                .ToArray()
+                        )
+                        .SetIsOriginAllowedToAllowWildcardSubdomains()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
+
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.ClearProviders(); // Remove the default logging providers
+                loggingBuilder.AddSerilog();     // Use Serilog as the logger
+            });
             // adding Mongoclient service 
             services.AddSingleton<IMongoClient>(serviceProvider =>
             {
@@ -54,15 +78,16 @@ namespace mongodb_dotnet_example
             {
                 app.UseDeveloperExceptionPage();
                 
-                
             }
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "mongodb_dotnet_example v1"));
 
             app.UseHttpsRedirection();
-
+            
             app.UseRouting();
+            
+            app.UseCors();
 
             app.UseAuthorization();
 

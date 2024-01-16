@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
+using Amazon.Runtime.Internal.Util;
+using Microsoft.Extensions.Logging;
 
 namespace mongodb_dotnet_example.Services
 {
@@ -12,13 +14,17 @@ namespace mongodb_dotnet_example.Services
         private readonly IMongoCollection<Game> _games;
         private readonly IMongoClient _mongoClient;
         private readonly GamesDatabaseSettings _settings;
+        public readonly ILogger<GamesService> _logger;
 
-        public GamesService(IOptions<GamesDatabaseSettings> settings, IMongoClient mongoClient)
+        public GamesService(IOptions<GamesDatabaseSettings> settings, IMongoClient mongoClient, ILogger<GamesService> logger )
         {
             _settings = settings.Value;
             _mongoClient = mongoClient;
             var mongoDatabase = _mongoClient.GetDatabase(_settings.DatabaseName);
             _games = mongoDatabase.GetCollection<Game>(_settings.GamesCollectionName);
+            _logger=logger;
+            _logger.LogInformation($"Client connected to {_settings.ConnectionString} with {_settings.DatabaseName}");
+
         }
 
 
