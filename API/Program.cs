@@ -1,10 +1,11 @@
 using System;
 using System.IO;
+using System.Net.NetworkInformation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-
+using Serilog.Settings.Configuration;
 namespace mongodb_dotnet_example
 {
     public class Program
@@ -12,12 +13,10 @@ namespace mongodb_dotnet_example
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-             .ReadFrom.Configuration(new ConfigurationBuilder()
-                 .AddJsonFile("appsettings.json")
-                 .Build())
-             .WriteTo.Console()
-             .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
-             .CreateLogger();
+            .ReadFrom.Configuration(new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build())
+            .CreateLogger();
 
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 

@@ -308,6 +308,7 @@ $RECYCLE.BIN/
 .vs/
 bin/
 obj/
+Logs/
 # Windows Installer files
 *.cab
 *.msi
