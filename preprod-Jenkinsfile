@@ -17,9 +17,9 @@ pipeline {
                         sudo rm -rf /var/www/preprod/API/Build/appsettings.Development.json
                         sudo rm -rf /var/www/preprod/API/Build/appsettings.Prod.json
                         sudo /opt/dotnet test /var/www/preprod/Tests/MongoTests/
-                        sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe stop site /site.name:'preprod.com'"
+                        sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe stop site /site.name:"preprod.com"
                         echo "apppool stop"
-                        sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe stop apppool /apppool.name:'preprod.com'"
+                        sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe stop apppool /apppool.name:"preprod.com"
                         echo "apppool stop"
                         sudo chmod 755 /var/www/preprod/API/Build -R
                         cd /var/www/preprod/API/Build
