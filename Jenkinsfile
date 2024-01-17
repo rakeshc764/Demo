@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Run Script') {
+        stage('Build') {
             steps {
                 script {
                     sh '''
@@ -16,7 +16,23 @@ pipeline {
                         sudo rm -rf /var/www/test/API/Build/web.config
                         sudo rm -rf /var/www/test/API/Build/appsettings.PreProd.json
                         sudo rm -rf /var/www/test/API/Build/appsettings.Prod.json
-                        sudo /opt/dotnet test /var/www/test/Tests/MongoTests/
+                    '''
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    sh 'sudo /opt/dotnet test /var/www/test/Tests/MongoTests/'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sh '''
                         sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe stop site /site.name:\"test.com\""
                         echo "apppool stop"
                         sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe stop apppool /apppool.name:\"test.com\""
