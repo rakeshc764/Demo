@@ -23,7 +23,7 @@ pipeline {
                         echo "apppool stop"
                         sudo chmod 755 /var/www/preprod/API/Build -R
                         cd /var/www/preprod/API/Build
-                        sudo lftp -e  "mirror --overwrite -R /var/www/test/API/Build .;quit" -u preprod,Welcome@123 98.70.15.172
+                        sudo lftp -e  "mirror --overwrite -R /var/www/preprod/API/Build .;quit" -u preprod,Welcome@123 98.70.15.172
                         sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe start site /site.name:\"preprod.com\""
                         echo "apppool started"
                         sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe start apppool /apppool.name:\"preprod.com\""
