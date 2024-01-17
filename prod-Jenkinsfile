@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Run Script') {
+        stage('Build') {
             steps {
                 script {
                     sh '''
@@ -11,12 +11,28 @@ pipeline {
                         sudo git pull origin main
                         sudo rm -rf /var/www/prod/API/Build
                         sudo /opt/dotnet restore
-                        sudo /opt/dotnet publish --framework net7.0 /var/www/test/API/mongodb-dotnet-example.csproj --configuration Release --output /var/www/prod/API/Build
+                        sudo /opt/dotnet publish --framework net7.0 /var/www/prod/API/mongodb-dotnet-example.csproj --configuration Release --output /var/www/prod/API/Build
                         sudo pkill -f mongodb-dotnet-example
                         sudo rm -rf /var/www/prod/API/Build/web.config
                         sudo rm -rf /var/www/prod/API/Build/appsettings.PreProd.json
                         sudo rm -rf /var/www/prod/API/Build/appsettings.Prod.json
-                        sudo /opt/dotnet test /var/www/prod/Tests/MongoTests/
+                    '''
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    sh 'sudo /opt/dotnet test /var/www/prod/Tests/MongoTests/'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sh '''
                         sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe stop site /site.name:\"prod.com\""
                         echo "apppool stop"
                         sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe stop apppool /apppool.name:\"prod.com\""
