@@ -1,8 +1,8 @@
 pipeline {
     agent any
-    
+
     stages {
-        stage('preprod') {
+        stage('Build') {
             steps {
                 script {
                     sh '''
@@ -14,9 +14,25 @@ pipeline {
                         sudo /opt/dotnet publish --framework net7.0 /var/www/preprod/API/mongodb-dotnet-example.csproj --configuration Release --output /var/www/preprod/API/Build
                         sudo pkill -f mongodb-dotnet-example
                         sudo rm -rf /var/www/preprod/API/Build/web.config
-                        sudo rm -rf /var/www/preprod/API/Build/appsettings.Development.json
+                        sudo rm -rf /var/www/preprod/API/Build/appsettings.PreProd.json
                         sudo rm -rf /var/www/preprod/API/Build/appsettings.Prod.json
-                        sudo /opt/dotnet test /var/www/preprod/Tests/MongoTests/
+                    '''
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    sh 'sudo /opt/dotnet test /var/www/preprod/Tests/MongoTests/'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sh '''
                         sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe stop site /site.name:\"preprod.com\""
                         echo "apppool stop"
                         sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe stop apppool /apppool.name:\"preprod.com\""
