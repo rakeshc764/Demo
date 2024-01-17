@@ -44,6 +44,7 @@ pipeline {
                         echo "apppool started"
                         sudo sshpass -p 'Welcome123' ssh testadmin@98.70.15.172 "C:\\Windows\\SysWOW64\\inetsrv\\appcmd.exe start apppool /apppool.name:\"test.com\""
                         echo "site started"
+                        #test
                     '''
                 }
             }
