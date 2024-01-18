@@ -13,7 +13,7 @@ pipeline {
                 sudo /opt/dotnet/dotnet restore
                 sudo /opt/dotnet/dotnet publish mongodb-dotnet-example.csproj --output /var/www/dotnet-test/API/build
                 sudo /opt/dotnet/dotnet test /var/www/dotnet-test/Tests/MongoTests/
-                sudo systemctl reload dotnet-test.service
+                sudo systemctl restart dotnet-test.service
                  
                 """
             }
