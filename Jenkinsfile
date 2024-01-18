@@ -24,10 +24,13 @@ pipeline {
             }
             steps {
                 sh """
-                echo "Building Artifact from Develop branch"
-                """
-                sh """
-                echo "Deploying Code from Develop branch"
+                cd /var/www/dotnet-preprod/API
+                sudo git stash
+                sudo git pull origin preprod
+                sudo /opt/dotnet/dotnet restore
+                sudo /opt/dotnet/dotnet publish mongodb-dotnet-example.csproj --output /var/www/dotnet-preprod/API/build
+                sudo /opt/dotnet/dotnet test /var/www/dotnet-preprod/Tests/MongoTests/
+                sudo systemctl restart dotnet-preprod.service
                 """
            }
         }
@@ -37,10 +40,13 @@ pipeline {
             }
             steps {
                 sh """
-                echo "Building Artifact from Preprod branch"
-                """
-                sh """
-                echo "Deploying Code from Preprod branch"
+                cd /var/www/dotnet-prod/API
+                sudo git stash
+                sudo git pull origin main
+                sudo /opt/dotnet/dotnet restore
+                sudo /opt/dotnet/dotnet publish mongodb-dotnet-example.csproj --output /var/www/dotnet-prod/API/build
+                sudo /opt/dotnet/dotnet test /var/www/dotnet-prod/Tests/MongoTests/
+                sudo systemctl restart dotnet-prod.service
                 """
            }
         }
